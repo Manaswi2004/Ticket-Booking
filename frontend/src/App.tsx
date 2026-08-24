@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react";
 import "./index.css";
 
-const API = "https://ticket-booking-zmj4.onrender.com";
+const API = "https://ticket-booking-zmj4.onrender.com/api";
 
 type User = {
   id: string;
   name: string;
   email: string;
   role: "USER" | "ADMIN";
+};
+
+type Seat = {
+  id: string;
+  number: string;
+  status: "AVAILABLE" | "HELD" | "BOOKED";
+  holdExpiresAt?: string | null;
 };
 
 type Event = {
@@ -21,13 +28,6 @@ type Event = {
   price: number;
   status: string;
   seats?: Seat[];
-};
-
-type Seat = {
-  id: string;
-  number: string;
-  status: "AVAILABLE" | "HELD" | "BOOKED";
-  holdExpiresAt?: string | null;
 };
 
 type Booking = {
@@ -58,7 +58,8 @@ function App() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
 
-  const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [authMode, setAuthMode] =
+    useState<"login" | "register">("login");
 
   const [authForm, setAuthForm] = useState({
     name: "",
@@ -85,9 +86,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (token) {
-      loadBookings();
-    }
+    if (token) loadBookings();
   }, [token]);
 
   async function loadEvents() {
@@ -214,9 +213,8 @@ function App() {
   }
 
   async function bookSelectedSeats() {
-    if (!user || !selectedEvent || selectedSeats.length === 0) {
+    if (!user || !selectedEvent || selectedSeats.length === 0)
       return;
-    }
 
     try {
       const holdResponse = await fetch(
@@ -379,6 +377,7 @@ function App() {
       const data = await response.json();
 
       setMessage(data.message);
+
       await loadEvents();
     } catch {
       setMessage("Unable to delete event");
@@ -415,26 +414,15 @@ function App() {
   return (
     <div className="app">
 
-      {/* NAVBAR */}
-
       <header className="navbar">
-
-        <div
-          className="logo"
-          onClick={() => setPage("home")}
-        >
+        <div className="logo" onClick={() => setPage("home")}>
           <span className="logoIcon">◆</span>
           Ticket<span>ly</span>
         </div>
 
         <nav>
-          <button onClick={() => setPage("home")}>
-            Home
-          </button>
-
-          <button onClick={() => setPage("events")}>
-            Events
-          </button>
+          <button onClick={() => setPage("home")}>Home</button>
+          <button onClick={() => setPage("events")}>Events</button>
 
           {user && (
             <button onClick={() => setPage("bookings")}>
@@ -450,21 +438,16 @@ function App() {
         </nav>
 
         <div className="navRight">
-
           {user ? (
             <>
               <div className="userBadge">
                 <div className="avatar">
                   {user.name.charAt(0).toUpperCase()}
                 </div>
-
                 <span>{user.name}</span>
               </div>
 
-              <button
-                className="outlineBtn"
-                onClick={logout}
-              >
+              <button className="outlineBtn" onClick={logout}>
                 Logout
               </button>
             </>
@@ -479,11 +462,8 @@ function App() {
               Sign In
             </button>
           )}
-
         </div>
       </header>
-
-      {/* MESSAGE */}
 
       {message && (
         <div className="toast">
@@ -492,14 +472,10 @@ function App() {
         </div>
       )}
 
-      {/* HOME */}
-
       {page === "home" && (
         <>
           <section className="hero">
-
             <div className="heroContent">
-
               <div className="pill">
                 ✦ Your gateway to unforgettable experiences
               </div>
@@ -511,9 +487,8 @@ function App() {
               </h1>
 
               <p>
-                Discover concerts, movies, sports and
-                exclusive events. Pick your seats and
-                book your experience in seconds.
+                Discover concerts, movies, sports and exclusive events.
+                Pick your seats and book your experience in seconds.
               </p>
 
               <div className="heroButtons">
@@ -536,20 +511,16 @@ function App() {
                   </button>
                 )}
               </div>
-
             </div>
 
             <div className="heroVisual">
               <div className="ticketCard">
-
                 <div className="ticketTop">
                   <span>LIVE EVENT</span>
                   <span>2026</span>
                 </div>
 
-                <div className="ticketIcon">
-                  🎟️
-                </div>
+                <div className="ticketIcon">🎟️</div>
 
                 <h3>
                   Your next
@@ -563,23 +534,15 @@ function App() {
                   <span>VENUE</span>
                   <strong>Bhopal Arena</strong>
                 </div>
-
               </div>
             </div>
-
           </section>
 
           <section className="section">
-
             <div className="sectionHeading">
               <div>
-                <span className="eyebrow">
-                  HANDPICKED FOR YOU
-                </span>
-
-                <h2>
-                  Popular Events
-                </h2>
+                <span className="eyebrow">HANDPICKED FOR YOU</span>
+                <h2>Popular Events</h2>
               </div>
 
               <button
@@ -600,32 +563,19 @@ function App() {
                 />
               ))}
             </div>
-
           </section>
         </>
       )}
 
-      {/* EVENTS */}
-
       {page === "events" && (
         <section className="section pageSection">
-
           <div className="pageTitle">
-            <span className="eyebrow">
-              DISCOVER
-            </span>
-
-            <h1>
-              All Events
-            </h1>
-
-            <p>
-              Find your next unforgettable experience.
-            </p>
+            <span className="eyebrow">DISCOVER</span>
+            <h1>All Events</h1>
+            <p>Find your next unforgettable experience.</p>
           </div>
 
           <div className="eventGrid">
-
             {events.map(event => (
               <EventCard
                 key={event.id}
@@ -634,19 +584,13 @@ function App() {
                 onWaitlist={() => joinWaitlist(event.id)}
               />
             ))}
-
           </div>
-
         </section>
       )}
 
-      {/* LOGIN */}
-
       {page === "login" && (
         <section className="authPage">
-
           <div className="authCard">
-
             <div className="authLogo">
               ◆ Ticket<span>ly</span>
             </div>
@@ -664,7 +608,6 @@ function App() {
             </p>
 
             <form onSubmit={handleAuth}>
-
               {authMode === "register" && (
                 <label>
                   Full Name
@@ -677,7 +620,6 @@ function App() {
                         name: e.target.value
                       })
                     }
-                    placeholder="Enter your name"
                   />
                 </label>
               )}
@@ -694,7 +636,6 @@ function App() {
                       email: e.target.value
                     })
                   }
-                  placeholder="you@example.com"
                 />
               </label>
 
@@ -711,7 +652,6 @@ function App() {
                       password: e.target.value
                     })
                   }
-                  placeholder="••••••••"
                 />
               </label>
 
@@ -720,11 +660,9 @@ function App() {
                   ? "Sign In"
                   : "Create Account"}
               </button>
-
             </form>
 
             <div className="switchAuth">
-
               {authMode === "login"
                 ? "Don't have an account?"
                 : "Already have an account?"}
@@ -732,9 +670,7 @@ function App() {
               <button
                 onClick={() =>
                   setAuthMode(
-                    authMode === "login"
-                      ? "register"
-                      : "login"
+                    authMode === "login" ? "register" : "login"
                   )
                 }
               >
@@ -742,15 +678,10 @@ function App() {
                   ? "Create one"
                   : "Sign in"}
               </button>
-
             </div>
-
           </div>
-
         </section>
       )}
-
-      {/* SEATS */}
 
       {page === "seats" && selectedEvent && (
         <section className="section pageSection">
@@ -763,19 +694,11 @@ function App() {
           </button>
 
           <div className="bookingHeader">
-
             <div>
-              <span className="eyebrow">
-                SELECT YOUR SEATS
-              </span>
-
-              <h1>
-                {selectedEvent.title}
-              </h1>
-
+              <span className="eyebrow">SELECT YOUR SEATS</span>
+              <h1>{selectedEvent.title}</h1>
               <p>
-                {selectedEvent.venue} ·{" "}
-                {selectedEvent.date} ·{" "}
+                {selectedEvent.venue} · {selectedEvent.date} ·{" "}
                 {selectedEvent.time}
               </p>
             </div>
@@ -784,23 +707,16 @@ function App() {
               ₹{selectedEvent.price}
               <span>/ seat</span>
             </div>
-
           </div>
 
           <div className="seatLayout">
-
-            <div className="screen">
-              SCREEN
-            </div>
+            <div className="screen">SCREEN</div>
 
             <div className="seatMap">
-
               {selectedEvent.seats?.map(seat => (
                 <button
                   key={seat.id}
-                  className={`seat ${
-                    seat.status.toLowerCase()
-                  } ${
+                  className={`seat ${seat.status.toLowerCase()} ${
                     selectedSeats.includes(seat.id)
                       ? "selected"
                       : ""
@@ -811,41 +727,18 @@ function App() {
                   {seat.number}
                 </button>
               ))}
-
             </div>
-
-            <div className="seatLegend">
-
-              <span>
-                <i className="available" />
-                Available
-              </span>
-
-              <span>
-                <i className="selectedLegend" />
-                Selected
-              </span>
-
-              <span>
-                <i className="booked" />
-                Booked
-              </span>
-
-            </div>
-
           </div>
 
           <div className="bookingBottom">
-
             <div>
               <span>Selected seats</span>
               <strong>
                 {selectedSeats.length
                   ? selectedSeats
                       .map(id =>
-                        selectedEvent.seats?.find(
-                          s => s.id === id
-                        )?.number
+                        selectedEvent.seats?.find(s => s.id === id)
+                          ?.number
                       )
                       .join(", ")
                   : "None"}
@@ -855,9 +748,7 @@ function App() {
             <div>
               <span>Total</span>
               <strong>
-                ₹
-                {selectedSeats.length *
-                  selectedEvent.price}
+                ₹{selectedSeats.length * selectedEvent.price}
               </strong>
             </div>
 
@@ -868,131 +759,75 @@ function App() {
             >
               Confirm Booking →
             </button>
-
           </div>
-
         </section>
       )}
 
-      {/* BOOKINGS */}
-
       {page === "bookings" && user && (
         <section className="section pageSection">
-
           <div className="pageTitle">
-            <span className="eyebrow">
-              YOUR TICKETS
-            </span>
-
-            <h1>
-              My Bookings
-            </h1>
+            <span className="eyebrow">YOUR TICKETS</span>
+            <h1>My Bookings</h1>
           </div>
 
           {bookings.length === 0 ? (
             <div className="emptyState">
               <div>🎟️</div>
               <h2>No bookings yet</h2>
-              <p>
-                Your next adventure is waiting.
-              </p>
-
-              <button
-                className="primaryBtn"
-                onClick={() => setPage("events")}
-              >
-                Explore Events
-              </button>
+              <p>Your next adventure is waiting.</p>
             </div>
           ) : (
             <div className="bookingList">
-
               {bookings.map(booking => (
-                <div
-                  className="bookingCard"
-                  key={booking.id}
-                >
-
-                  <div className="bookingIcon">
-                    🎫
-                  </div>
-
+                <div className="bookingCard" key={booking.id}>
                   <div className="bookingMain">
+                    <span className="status">{booking.status}</span>
 
-                    <span className="status">
-                      {booking.status}
-                    </span>
-
-                    <h2>
-                      {booking.event?.title}
-                    </h2>
+                    <h2>{booking.event?.title}</h2>
 
                     <p>
                       {booking.event?.venue} ·{" "}
                       {booking.event?.date}
                     </p>
 
-                    <div className="bookingMeta">
-                      <span>
-                        Reference
-                        <strong>
-                          {booking.bookingReference}
-                        </strong>
-                      </span>
+                    <strong>
+                      {booking.bookingReference}
+                    </strong>
 
-                      <span>
-                        Seats
-                        <strong>
-                          {booking.seatIds.length}
-                        </strong>
-                      </span>
+                    <p>
+                      Seats: {booking.seatIds.length}
+                    </p>
 
-                      <span>
-                        Total
-                        <strong>
-                          ₹{booking.totalAmount}
-                        </strong>
-                      </span>
+                    <p>
+                      ₹{booking.totalAmount}
+                    </p>
+                  </div>
+
+                  {booking.status === "CONFIRMED" && (
+                    <div className="bookingActions">
+                      <button
+                        className="outlineBtn"
+                        onClick={() => getQR(booking.id)}
+                      >
+                        QR Ticket
+                      </button>
+
+                      <button
+                        className="dangerBtn"
+                        onClick={() =>
+                          cancelBooking(booking.id)
+                        }
+                      >
+                        Cancel
+                      </button>
                     </div>
-
-                  </div>
-
-                  <div className="bookingActions">
-
-                    {booking.status === "CONFIRMED" && (
-                      <>
-                        <button
-                          className="outlineBtn"
-                          onClick={() =>
-                            getQR(booking.id)
-                          }
-                        >
-                          QR Ticket
-                        </button>
-
-                        <button
-                          className="dangerBtn"
-                          onClick={() =>
-                            cancelBooking(booking.id)
-                          }
-                        >
-                          Cancel
-                        </button>
-                      </>
-                    )}
-
-                  </div>
-
+                  )}
                 </div>
               ))}
-
             </div>
           )}
-
         </section>
       )}
-
-      {/* ADMIN */}
 
       {page === "admin" &&
         user?.role === "ADMIN" && (
@@ -1002,48 +837,18 @@ function App() {
               <span className="eyebrow">
                 ADMINISTRATION
               </span>
-
-              <h1>
-                Admin Dashboard
-              </h1>
-
+              <h1>Admin Dashboard</h1>
               <p>
                 Manage events and monitor bookings.
               </p>
             </div>
 
-            <div className="statsGrid">
-
-              <div className="statCard">
-                <span>Events</span>
-                <strong>{events.length}</strong>
-              </div>
-
-              <div className="statCard">
-                <span>Bookings</span>
-                <strong>{bookings.length}</strong>
-              </div>
-
-              <div className="statCard">
-                <span>Role</span>
-                <strong>ADMIN</strong>
-              </div>
-
-              <div className="statCard">
-                <span>Status</span>
-                <strong>ACTIVE</strong>
-              </div>
-
-            </div>
-
             <div className="adminLayout">
 
               <div className="adminFormCard">
-
                 <h2>Create Event</h2>
 
                 <form onSubmit={createEvent}>
-
                   <input
                     required
                     placeholder="Event title"
@@ -1067,60 +872,52 @@ function App() {
                     }
                   />
 
-                  <div className="formRow">
+                  <input
+                    required
+                    type="date"
+                    value={adminForm.date}
+                    onChange={e =>
+                      setAdminForm({
+                        ...adminForm,
+                        date: e.target.value
+                      })
+                    }
+                  />
 
-                    <input
-                      required
-                      type="date"
-                      value={adminForm.date}
-                      onChange={e =>
-                        setAdminForm({
-                          ...adminForm,
-                          date: e.target.value
-                        })
-                      }
-                    />
+                  <input
+                    required
+                    type="time"
+                    value={adminForm.time}
+                    onChange={e =>
+                      setAdminForm({
+                        ...adminForm,
+                        time: e.target.value
+                      })
+                    }
+                  />
 
-                    <input
-                      required
-                      type="time"
-                      value={adminForm.time}
-                      onChange={e =>
-                        setAdminForm({
-                          ...adminForm,
-                          time: e.target.value
-                        })
-                      }
-                    />
+                  <input
+                    required
+                    placeholder="Venue"
+                    value={adminForm.venue}
+                    onChange={e =>
+                      setAdminForm({
+                        ...adminForm,
+                        venue: e.target.value
+                      })
+                    }
+                  />
 
-                  </div>
-
-                  <div className="formRow">
-
-                    <input
-                      required
-                      placeholder="Venue"
-                      value={adminForm.venue}
-                      onChange={e =>
-                        setAdminForm({
-                          ...adminForm,
-                          venue: e.target.value
-                        })
-                      }
-                    />
-
-                    <input
-                      placeholder="City"
-                      value={adminForm.city}
-                      onChange={e =>
-                        setAdminForm({
-                          ...adminForm,
-                          city: e.target.value
-                        })
-                      }
-                    />
-
-                  </div>
+                  <input
+                    placeholder="City"
+                    value={adminForm.city}
+                    onChange={e =>
+                      setAdminForm({
+                        ...adminForm,
+                        city: e.target.value
+                      })
+                    }
+                  />
 
                   <input
                     required
@@ -1138,13 +935,10 @@ function App() {
                   <button className="primaryBtn full">
                     Create Event
                   </button>
-
                 </form>
-
               </div>
 
               <div className="adminEvents">
-
                 <h2>Manage Events</h2>
 
                 {events.map(event => (
@@ -1152,7 +946,6 @@ function App() {
                     className="adminEvent"
                     key={event.id}
                   >
-
                     <div>
                       <strong>{event.title}</strong>
                       <span>
@@ -1168,24 +961,16 @@ function App() {
                     >
                       Delete
                     </button>
-
                   </div>
                 ))}
-
               </div>
-
             </div>
-
           </section>
         )}
 
-      {/* QR MODAL */}
-
       {qrCode && (
         <div className="modal">
-
           <div className="qrCard">
-
             <button
               className="closeModal"
               onClick={() => setQrCode("")}
@@ -1197,15 +982,9 @@ function App() {
               DIGITAL TICKET
             </span>
 
-            <h2>
-              Your Ticket QR
-            </h2>
+            <h2>Your Ticket QR</h2>
 
-            <img src={qrCode} alt="Ticket QR Code" />
-
-            <p>
-              Show this QR code at the venue.
-            </p>
+            <img src={qrCode} alt="QR Code" />
 
             <button
               className="primaryBtn"
@@ -1213,30 +992,18 @@ function App() {
             >
               Done
             </button>
-
           </div>
-
         </div>
       )}
 
       <footer>
         <strong>Ticketly</strong>
-        <span>
-          Smart event booking made simple.
-        </span>
-        <span>
-          © 2026 Ticketly
-        </span>
+        <span>Smart event booking made simple.</span>
+        <span>© 2026 Ticketly</span>
       </footer>
-
     </div>
   );
 }
-
-
-/* =========================
-   EVENT CARD
-========================= */
 
 function EventCard({
   event,
@@ -1277,34 +1044,21 @@ function EventCard({
       </div>
 
       <div className="eventContent">
-
         <span className="eventType">
           {event.status}
         </span>
 
-        <h3>
-          {event.title}
-        </h3>
+        <h3>{event.title}</h3>
 
-        <p>
-          {event.description}
-        </p>
+        <p>{event.description}</p>
 
         <div className="eventDetails">
-          <span>
-            📍 {event.venue}
-          </span>
-
-          <span>
-            🕐 {event.time}
-          </span>
+          <span>📍 {event.venue}</span>
+          <span>🕐 {event.time}</span>
         </div>
 
         <div className="eventBottom">
-
-          <strong>
-            ₹{event.price}
-          </strong>
+          <strong>₹{event.price}</strong>
 
           <button
             className="primaryBtn small"
@@ -1312,7 +1066,6 @@ function EventCard({
           >
             Book Now
           </button>
-
         </div>
 
         <button
@@ -1321,9 +1074,7 @@ function EventCard({
         >
           Join Waitlist
         </button>
-
       </div>
-
     </div>
   );
 }
