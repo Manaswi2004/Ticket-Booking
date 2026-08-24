@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./index.css";
 
-const API = "http://localhost:5000/api";
+const API = "https://ticket-booking-zmj4.onrender.com";
 
 type User = {
   id: string;
